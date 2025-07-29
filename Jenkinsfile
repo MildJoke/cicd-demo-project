@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables
         APP_NAME = 'cicd-demo-app'
-        DEPLOY_SERVER = 'your-ec2-public-ip'  // Replace with your EC2 public IP
+        DEPLOY_SERVER = '18.223.15.46'  // Your EC2 public IP
     }
     
     stages {
