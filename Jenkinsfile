@@ -36,13 +36,22 @@ pipeline {
             steps {
                 echo 'Deploying to EC2 instance...'
                 script {
-                    // This assumes you have SSH keys configured
+                    // Deploy locally since Jenkins is on the same server
                     sh '''
-                        # Copy files to EC2 instance
-                        scp -i ~/.ssh/ec2-key.pem -r * ubuntu@${DEPLOY_SERVER}:/tmp/app/
+                        # Create backup of existing files
+                        sudo cp -r /var/www/html /var/www/html.backup.$(date +%Y%m%d_%H%M%S) || true
                         
-                        # Execute deployment script on EC2
-                        ssh -i ~/.ssh/ec2-key.pem ubuntu@${DEPLOY_SERVER} 'cd /tmp/app && ./deploy.sh'
+                        # Copy new files to web directory
+                        sudo cp -r * /var/www/html/
+                        
+                        # Set proper permissions
+                        sudo chown -R www-data:www-data /var/www/html/
+                        sudo chmod -R 755 /var/www/html/
+                        
+                        # Restart Apache2
+                        sudo systemctl restart apache2
+                        
+                        echo "Deployment completed successfully!"
                     '''
                 }
             }
